@@ -1,0 +1,41 @@
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:element name="Rule">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="Type" type="Rule" />
+                    <xs:element name="Return" type="xs:boolean" />
+                    <xs:choice>
+                        <xs:element name="PaymentConfiguration" type="PaymentMethodRule" />
+                        <xs:element name="RegionConfiguration" type="RegionRule" />
+                        <xs:element name="QuantityConfiguration" type="xs:integer" />
+                        <xs:element name="ScheduleConfiguration" type="ScheduleRule"/>
+                    </xs:choice>
+                    <xs:element minOccurs="0" type="xs:time" name="From"/>
+                    <xs:element minOccurs="0" type="xs:time" name="To"/>
+                </xs:sequence>
+            </xs:complexType>   
+        </xs:element>
+        <xs:simpleType name="Rule">
+            <xs:restriction base ="xs:string">
+                <xs:enumeration value="PaymentMethod"/>
+                <xs:enumeration value="Region" />
+                <xs:enumeration value="QuantityNeeded" />
+                <xs:enumeration value="Schedule"/>
+            </xs:restriction>
+        </xs:simpleType>
+        <xs:complexType name="PaymentMethodRule">
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="5"  type="xs:string" name="PaymentMethod"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:complexType name="RegionRule">
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="3"  type="xs:string" name="Region" />
+            </xs:sequence>
+        </xs:complexType>
+        <xs:complexType name="ScheduleRule">
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="7"  type="xs:string" name="Day" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:schema>

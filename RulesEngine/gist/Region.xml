@@ -1,0 +1,9 @@
+<Rule>
+    <Type>Region</Type>
+    <Return>true</Return>
+    <RegionConfiguration>
+        <Region>NA</Region>
+        <Region>EU</Region>
+        <Region>APAC</Region>
+    </RegionConfiguration>
+</Rule>

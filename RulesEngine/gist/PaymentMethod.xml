@@ -1,0 +1,11 @@
+<Rule>
+    <Type>PaymentMethod</Type>
+    <Return>true</Return>
+    <PaymentConfiguration>
+        <PaymentMethod>Warranty</PaymentMethod>
+        <PaymentMethod>Goodwill</PaymentMethod>
+        <PaymentMethod>PDI</PaymentMethod>
+        <PaymentMethod>Rectification</PaymentMethod>
+        <PaymentMethod>ServicePlan</PaymentMethod>
+    </PaymentConfiguration>
+</Rule>

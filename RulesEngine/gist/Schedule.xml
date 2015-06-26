@@ -1,0 +1,15 @@
+<Rule>
+    <Type>Schedule</Type>
+    <Return>true</Return>
+    <ScheduleConfiguration>
+        <Day>Monday</Day>
+        <Day>Tuesday</Day>
+        <Day>Wednesday</Day>
+        <Day>Thursday</Day>
+        <Day>Friday</Day>
+        <Day>Saturday</Day>
+        <Day>Sunday</Day>
+    </ScheduleConfiguration>
+    <From>02:30:00</From>
+    <To>04:30:00</To>
+</Rule>

@@ -1,0 +1,5 @@
+<Rule>
+    <Type>QuantityNeeded</Type>
+    <Return>true</Return>
+    <QuantityConfiguration>20</QuantityConfiguration>
+</Rule>
