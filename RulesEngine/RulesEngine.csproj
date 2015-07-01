@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GroupDynamicParam .cs" />
-    <Compile Include="Models.cs" />
+    <Compile Include="PaymentMethodRule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -54,6 +54,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="QuantityNeededRule.cs" />
+    <Compile Include="RegionRule.cs" />
+    <Compile Include="Rule.cs" />
+    <Compile Include="RuleCTO.cs" />
+    <Compile Include="RuleGroup.cs" />
+    <Compile Include="RuleProfile.cs" />
+    <Compile Include="ScheduleRule.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
