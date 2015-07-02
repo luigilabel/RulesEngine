@@ -41,7 +41,7 @@
                 cn.Open();
                 cn.Execute(
                     "CreateProfile",
-                    new GroupDynamicParam(userID, profile.RuleProfileID, profile.Name, profile.Groups.AsList()),
+                    new GroupDynamicParam(userID, profile.ID, profile.Name, profile.Groups.AsList()),
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: 120);
                 cn.Close();
@@ -55,7 +55,7 @@
                 cn.Open();
                 int done = cn.Execute(
                     "DeleteProfile",
-                    new { ProfileID = profile.RuleProfileID, UserID = userID },
+                    new { ProfileID = profile.ID, UserID = userID },
                     commandType: CommandType.StoredProcedure);
                 cn.Close();
             }
@@ -66,10 +66,10 @@
             using (IDbConnection cn = Connection)
             {
                 cn.Open();
-                    int done = cn.Execute(
-                    "UpdateProfile",
-                    new GroupDynamicParam(userID, profile.RuleProfileID, profile.Name, profile.Groups.AsList()),
-                    commandType: CommandType.StoredProcedure);
+                int done = cn.Execute(
+                "UpdateProfile",
+                new GroupDynamicParam(userID, profile.ID, profile.Name, profile.Groups.AsList()),
+                commandType: CommandType.StoredProcedure);
                 cn.Close();
             }
         }
@@ -112,7 +112,7 @@
                             break;
                     }
 
-                    tempRule.ID = rule.RuleDetailID;
+                    tempRule.ID = rule.ID;
                     tempRule.GroupID = rule.RuleGroupID;
                     tempRule.IsEnabled = rule.IsEnabled;
                     ruleList.Add(tempRule);
@@ -120,7 +120,7 @@
 
                 foreach (var group in groups)
                 {
-                    var groupRuleList = ruleList.Where(r => r.GroupID == group.RuleGroupID);
+                    var groupRuleList = ruleList.Where(r => r.GroupID == group.ID);
                     group.Rules = groupRuleList;
                 }
 
@@ -183,7 +183,8 @@
                 {
                     PaymentMethod.Warranty, PaymentMethod.Rectification
                 },
-                IsReturnable = true
+                IsReturnable = true,
+                IsEnabled = true
             };
 
             var rule2 = new RegionRule
@@ -198,7 +199,8 @@
             var rule3 = new QuantityNeededRule
             {
                 Amount = 10,
-                IsReturnable = true
+                IsReturnable = true,
+                IsEnabled = true
             };
 
             var rule4 = new ScheduleRule
@@ -216,7 +218,8 @@
 
                 From = new TimeSpan(2, 30, 00),
                 To = new TimeSpan(4, 30, 00),
-                IsReturnable = true
+                IsReturnable = true,
+                IsEnabled = true
             };
 
             var group1 = new RuleGroup
@@ -242,28 +245,23 @@
             };
             var profile2 = new RuleProfile
             {
-                RuleProfileID = 1014
+                ID = 1025
             };
 
-            //InsertProfile(profile1, 1);
-            profile1 = ReadProfile(1014);
+            ////InsertProfile(profile1, 1);
+            ////profile1 = ReadProfile(1024);
             profile1.Name = "Refreshed";
             var rule5 = new QuantityNeededRule
             {
+                GroupID = 38487,
                 Amount = 10,
-                IsReturnable = true
+                IsReturnable = true,
+                IsEnabled = true
             };
             rule3.IsEnabled = false;
-            var lista = new List<Rule>()
-            {
-                rule1,
-                rule2,
-                rule5
-            };
-            group1.Rules = lista;
-
+            profile1.Groups.First().Rules = profile1.Groups.First().Rules.Concat<Rule>(new List<Rule> { rule5 });
             ////UpdateProfile(profile1, 2);
-             DeleteProfile(profile2, 1);
+            DeleteProfile(profile2, 1);
         }
     }
 }

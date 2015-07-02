@@ -7,7 +7,7 @@
     {
         public QuantityNeededRule()
         {
-            this.RuleType = RuleType.QuantityNeeded;
+            this.RuleTypeID = RuleType.QuantityNeeded;
         }
 
         [XmlElement("Quantity")]

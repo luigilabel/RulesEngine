@@ -16,7 +16,7 @@
         public int ID { get; set; }
 
         [XmlElement("Type")]
-        public RuleType RuleType { get; set; }
+        public RuleType RuleTypeID { get; set; }
 
         [XmlIgnore]
         public int GroupID { get; set; }

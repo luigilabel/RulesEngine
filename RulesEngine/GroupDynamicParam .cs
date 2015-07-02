@@ -38,7 +38,7 @@
                 new SqlMetaData("GroupGuid", SqlDbType.VarChar, 32),
                 new SqlMetaData("IsSystem", SqlDbType.Bit),
                 new SqlMetaData("DisplayOrder", SqlDbType.Int),
-                new SqlMetaData("[IsEnabled]", SqlDbType.Bit)
+                new SqlMetaData("[Enabled]", SqlDbType.Bit)
             };
 
             SqlMetaData[] ruleSqlType =
@@ -47,7 +47,7 @@
                 new SqlMetaData("RuleTypeID", SqlDbType.Int),
                 new SqlMetaData("GroupGuid", SqlDbType.Char, 32),
                 new SqlMetaData("RuleConfiguration", SqlDbType.Xml),
-                new SqlMetaData("[IsEnabled]", SqlDbType.Bit)
+                new SqlMetaData("[Enabled]", SqlDbType.Bit)
             };
 
             foreach (RuleGroup group in this._groups)
@@ -55,7 +55,7 @@
                 var groupRecord = new SqlDataRecord(groupSqlType);
                 string groupGuid = Guid.NewGuid().ToString().Replace("-", string.Empty);
 
-                groupRecord.SetInt32(0, group.RuleGroupID);
+                groupRecord.SetInt32(0, group.ID);
                 groupRecord.SetString(1, groupGuid);
                 groupRecord.SetBoolean(2, group.IsSystem);
                 groupRecord.SetInt32(3, group.DisplayOrder);
@@ -65,7 +65,7 @@
                 foreach (var rule in group.Rules)
                 {
                     var ruleRecord = new SqlDataRecord(ruleSqlType);
-                    var ruleType = (int)rule.RuleType;
+                    var ruleType = (int)rule.RuleTypeID;
 
                     ruleRecord.SetInt32(0, rule.ID);
                     ruleRecord.SetInt32(1, ruleType);
@@ -98,7 +98,7 @@
         {
             StringWriter writer = new StringWriter();
             XmlSerializer ruleSerializer = null;
-            switch (rule.RuleType)
+            switch (rule.RuleTypeID)
             {
                 case RuleType.PaymentMethod:
                     ruleSerializer = new XmlSerializer(typeof(PaymentMethodRule));

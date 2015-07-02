@@ -15,7 +15,7 @@
     {
         public RegionRule()
         {
-            this.RuleType = RuleType.Region;
+            this.RuleTypeID = RuleType.Region;
         }
 
         [XmlArray("RegionConfiguration")]

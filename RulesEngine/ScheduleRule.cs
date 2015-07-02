@@ -9,7 +9,7 @@
     {
         public ScheduleRule()
         {
-            this.RuleType = RuleType.Schedule;
+            this.RuleTypeID = RuleType.Schedule;
         }
 
         [XmlArray("ScheduleConfiguration")]

@@ -18,7 +18,7 @@
     {
         public PaymentMethodRule()
         {
-            this.RuleType = RuleType.PaymentMethod;
+            this.RuleTypeID = RuleType.PaymentMethod;
         }
 
         [XmlArray("PaymentConfiguration")]

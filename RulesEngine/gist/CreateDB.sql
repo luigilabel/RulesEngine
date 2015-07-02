@@ -7,7 +7,7 @@ CREATE TYPE [dbo].[RulesGroupTableType] AS TABLE(
 	[GroupGuid] [char](32) NOT NULL,
 	[IsSystem] [bit] NOT NULL,
 	[DisplayOrder] [int] NOT NULL,
-	[IsEnabled] [bit] NOT NULL
+	[Enabled] [bit] NOT NULL
 )
 GO
 
@@ -17,7 +17,7 @@ CREATE TYPE [dbo].[RulesTableType] AS TABLE(
 	[RuleTypeID] [int] NOT NULL,
 	[GroupGuid] [char](32) NOT NULL,
 	[RuleConfiguration] [xml] NOT NULL,
-	[IsEnabled] [bit] NOT NULL
+	[Enabled] [bit] NOT NULL
 )
 GO
 
@@ -46,21 +46,21 @@ GO
 CREATE TABLE [dbo].[RuleProfile](
 	[RuleProfileID] [int] IDENTITY(1,1) NOT NULL CONSTRAINT [PK_Profile] PRIMARY KEY CLUSTERED,
 	[Name] [varchar](50) NOT NULL,
+	[Enabled] [bit] NOT NULL CONSTRAINT [DF_RulesProfile_Enabled]  DEFAULT ((1)),
 	[CreateByUserID] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL CONSTRAINT [DF_RulesProfile_CreateDate]  DEFAULT (getutcdate()),
-	[IsEnabled] [bit] NOT NULL CONSTRAINT [DF_RulesProfile_Enabled]  DEFAULT ((1)),
 	[ModifyByUserID] [int] NULL,
-	[ModifyDate] [datetime] NULL 
+	[ModifyDate] [datetime] NULL
 )
 GO
 
 
-CREATE UNIQUE NONCLUSTERED INDEX [IDX_RuleProfile_Name_IsEnabled] ON [dbo].[RuleProfile]
+CREATE UNIQUE NONCLUSTERED INDEX [IDX_RuleProfile_Name_Enabled] ON [dbo].[RuleProfile]
 (
 	[Name] ASC,
-	[IsEnabled] ASC
+	[Enabled] ASC
 )
-WHERE ([IsEnabled]=(1))
+WHERE ([Enabled]=(1))
 GO
 
 
@@ -69,9 +69,9 @@ CREATE TABLE [dbo].[RuleGroup](
 	[RuleProfileID] [int] NOT NULL CONSTRAINT [FK_Group_Profile] FOREIGN KEY([RuleProfileID]) REFERENCES [dbo].[RuleProfile] ([RuleProfileID]),
 	[IsSystem] [bit] NOT NULL,
 	[DisplayOrder] [int] NOT NULL,
+	[Enabled] [bit] NOT NULL CONSTRAINT [DF_RulesGroup_Enabled] DEFAULT ((1)),
 	[CreateByUserID] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL CONSTRAINT [DF_RulesGroup_CreateDate] DEFAULT (getutcdate()),
-	[IsEnabled] [bit] NOT NULL CONSTRAINT [DF_RulesGroup_Enabled] DEFAULT ((1)),
 	[ModifyByUserID] [int] NULL,
 	[ModifyDate] [datetime] NULL
 )
@@ -83,11 +83,11 @@ CREATE TABLE [dbo].[RuleDetail](
 	[RuleTypeID] [int] NOT NULL CONSTRAINT [FK_RuleDetail_RuleType] FOREIGN KEY([RuleTypeID]) REFERENCES [dbo].[RuleType] ([RuleTypeID]),
 	[RuleGroupID] [int] NOT NULL CONSTRAINT [FK_Rule_Group] FOREIGN KEY([RuleGroupID]) REFERENCES [dbo].[RuleGroup] ([RuleGroupID]),
 	[RuleConfiguration] [xml](CONTENT [dbo].[RuleType]) NOT NULL,
-	[IsEnabled] [bit] NOT NULL CONSTRAINT [DF_RuleDetail_Enabled]  DEFAULT ((1)),
+	[Enabled] [bit] NOT NULL CONSTRAINT [DF_RuleDetail_Enabled]  DEFAULT ((1)),
 	[CreateByUserID] [int] NOT NULL,
 	[CreateDate] [datetime] NOT NULL CONSTRAINT [DF_RuleDetail_CreateDate]  DEFAULT (getutcdate()),
 	[ModifyByUserID] [int] NULL,
-	[ModifyDate] [datetime] NULL 
+	[ModifyDate] [datetime] NULL
 )
 GO
 
@@ -190,7 +190,7 @@ BEGIN
 			declare @GroupID int = (select top 1 RuleGroupID from #groups)
 
 			UPDATE RuleDetail SET 
-				 IsEnabled = 0
+				 Enabled = 0
 				,ModifyByUserID = @UserID
 				,ModifyDate = getutcdate()
 			WHERE RuleGroupID = @GroupID
@@ -199,13 +199,13 @@ BEGIN
 		end
 
 		UPDATE RuleGroup SET 
-			 IsEnabled = 0
+			 Enabled = 0
 			,ModifyByUserID = @UserID
 			,ModifyDate = getutcdate()
 		WHERE RuleProfileID = @ProfileID
 
 		UPDATE RuleProfile SET 
-			IsEnabled = 0
+			Enabled = 0
 			,ModifyByUserID = @UserID
 			,ModifyDate = getutcdate()
 		WHERE RuleProfileID = @ProfileID
@@ -221,16 +221,37 @@ END
 GO
 
 
-Create PROCEDURE [dbo].[ReadProfile]
+CREATE PROCEDURE [dbo].[ReadProfile]
 	(@ProfileID int)
 AS
 BEGIN
 
 	SET NOCOUNT ON;
 
-	SELECT * FROM RuleProfile WHERE RuleProfileID = @ProfileID
-	SELECT * FROM RuleGroup WHERE RuleProfileID = @ProfileID
-	SELECT * FROM RuleDetail WHERE RuleGroupID in ( SELECT RuleGroupID FROM RuleGroup WHERE RuleProfileID = @ProfileID)
+	SELECT 
+		 RuleProfileID as ID
+		,Name
+		,Enabled as IsEnabled
+	FROM RuleProfile 
+	WHERE RuleProfileID = @ProfileID
+	
+	SELECT
+		 RuleGroupID as ID
+		,RuleProfileID as ProfileID
+		,IsSystem
+		,DisplayOrder
+		,Enabled as IsEnabled
+	FROM RuleGroup 
+	WHERE RuleProfileID = @ProfileID
+
+	SELECT 
+		 RuleDetailID as ID
+		,RuleTypeID 
+		,RuleGroupID
+		,RuleConfiguration
+		,Enabled as IsEnabled
+	FROM RuleDetail 
+	WHERE RuleGroupID in ( SELECT RuleGroupID FROM RuleGroup WHERE RuleProfileID = @ProfileID)
 
 END
 GO
@@ -304,11 +325,11 @@ BEGIN
 				-- Update all existing groups that changed its display order or enabled status		 
 				UPDATE RG SET  
 					 RG.DisplayOrder   = T.DisplayOrder
-					,RG.[IsEnabled]      = T.[IsEnabled]
+					,RG.[Enabled]      = T.[Enabled]
 					,RG.ModifyByUserID = @UserID
 					,RG.ModifyDate     = GETUTCDATE()
 				FROM [dbo].[RuleGroup] RG INNER JOIN #groups T
-				ON T.RuleGroupID = @groupID AND (RG.DisplayOrder != T.DisplayOrder OR RG.[IsEnabled] != T.[IsEnabled]);
+				ON T.RuleGroupID = @groupID AND (RG.DisplayOrder != T.DisplayOrder OR RG.[Enabled] != T.[Enabled]);
 							
 				-- insert new rules into preexisting groups
 				INSERT INTO [dbo].[RuleDetail]
@@ -327,7 +348,7 @@ BEGIN
 				-- Update older rules
 				UPDATE RD SET 
 					 RD.RuleConfiguration = R.RuleConfiguration
-					,RD.[IsEnabled]         = R.[IsEnabled]
+					,RD.[Enabled]         = R.[Enabled]
 					,RD.ModifyByUserID    = @UserID
 					,RD.ModifyDate        = GETUTCDATE()
 				FROM [dbo].[RuleDetail] RD INNER JOIN @Rules R
@@ -351,8 +372,8 @@ BEGIN
 	END CATCH
 END
 GO
-                                    
 
+                                    
 SET IDENTITY_INSERT [dbo].[RuleType] ON 
 GO
 INSERT [dbo].[RuleType] ([RuleTypeID], [Name], [CreateByUserID], [CreateDate], [Enabled], [ModifyByUserID], [ModifyDate]) VALUES (1, N'Payment Method', 1, CAST(N'2015-06-25 23:15:50.140' AS DateTime), 1, NULL, NULL)
@@ -365,4 +386,3 @@ INSERT [dbo].[RuleType] ([RuleTypeID], [Name], [CreateByUserID], [CreateDate], [
 GO
 SET IDENTITY_INSERT [dbo].[RuleType] OFF
 GO
-

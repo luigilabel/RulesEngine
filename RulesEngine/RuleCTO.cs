@@ -2,7 +2,7 @@
 {
     public class RuleCTO
     {
-        public int RuleDetailID { get; set; }
+        public int ID { get; set; }
 
         public RuleType RuleTypeID { get; set; }
 
