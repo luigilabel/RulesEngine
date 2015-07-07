@@ -248,7 +248,7 @@
                 ID = 1025
             };
 
-            ////InsertProfile(profile1, 1);
+            InsertProfile(profile1, 1);
             ////profile1 = ReadProfile(1024);
             profile1.Name = "Refreshed";
             var rule5 = new QuantityNeededRule
@@ -261,7 +261,7 @@
             rule3.IsEnabled = false;
             profile1.Groups.First().Rules = profile1.Groups.First().Rules.Concat<Rule>(new List<Rule> { rule5 });
             ////UpdateProfile(profile1, 2);
-            DeleteProfile(profile2, 1);
+            ////DeleteProfile(profile2, 1);
         }
     }
 }

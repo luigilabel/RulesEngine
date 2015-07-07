@@ -13,12 +13,13 @@ BEGIN
 		INSERT INTO RuleProfile (Name, CreateByUserID) 
 		VALUES (@ProfileName, @UserID)
 		
-		declare @newProfileID int = scope_identity()
+		DECLARE @newProfileID int = scope_identity()
 		
 		select * into #groups from @Groups -- temp aux table used to iterate over groups
 
-		while exists (select 1 from #groups) begin
-			declare @guid varchar(50) = (select top 1 GroupGuid from #groups)
+		WHILE exists (select 1 from #groups) 
+		BEGIN
+			DECLARE @guid varchar(50) = (select top 1 GroupGuid from #groups)
 
 			INSERT INTO [dbo].[RuleGroup]
 			   ([RuleProfileID]

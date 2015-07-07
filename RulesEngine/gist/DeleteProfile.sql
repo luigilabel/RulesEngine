@@ -7,12 +7,12 @@ BEGIN
 	BEGIN TRY
 		BEGIN TRAN
 
-		select *
-		into #groups
-		from RuleGroup where RuleProfileID = @ProfileID -- temp aux table used to iterate over groups
+		SELECT *
+		INTO #groups
+		FROM RuleGroup WHERE RuleProfileID = @ProfileID -- temp aux table used to iterate over groups
 
-		while exists (select 1 from #groups) begin
-			declare @GroupID int = (select top 1 RuleGroupID from #groups)
+		WHILE exists (select 1 from #groups) begin
+			DECLARE @GroupID int = (select top 1 RuleGroupID from #groups)
 
 			UPDATE RuleDetail SET 
 				 Enabled = 0
@@ -20,7 +20,7 @@ BEGIN
 				,ModifyDate = getutcdate()
 			WHERE RuleGroupID = @GroupID
 
-			delete #groups where RuleGroupID = @GroupID
+			DELETE #groups WHERE RuleGroupID = @GroupID
 		end
 
 		UPDATE RuleGroup SET 

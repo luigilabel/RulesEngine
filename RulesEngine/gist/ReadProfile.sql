@@ -28,7 +28,7 @@ BEGIN
 		,RuleConfiguration
 		,Enabled as IsEnabled
 	FROM RuleDetail 
-	WHERE RuleGroupID in ( SELECT RuleGroupID FROM RuleGroup WHERE RuleProfileID = @ProfileID)
+	WHERE RuleGroupID in ( select RuleGroupID from RuleGroup where RuleProfileID = @ProfileID)
 
 END
 GO
