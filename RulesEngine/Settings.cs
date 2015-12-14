@@ -20,6 +20,8 @@
         private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e)
         {
             // Add code to handle the SettingChangingEvent event here.
+
+            //a comment just to prove slack integration.
         }
 
         private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e)
